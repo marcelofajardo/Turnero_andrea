@@ -1,0 +1,9 @@
+/vendor/
+/.env
+/storage/sessions/*
+/storage/logs/*
+!/storage/sessions/.gitignore
+!/storage/logs/.gitignore
+/.phpunit.result.cache
+/public/assets/uploads/*
+/node_modules/

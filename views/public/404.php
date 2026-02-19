@@ -1,0 +1,1 @@
+<h3 style="font-family:sans-serif;text-align:center;padding:60px">404 — Página no encontrada</h3>
