@@ -5,7 +5,8 @@ if (session_status() === PHP_SESSION_NONE)
 
 <?php if (!empty($_GET['msg'])): ?>
 <div class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle me-2"></i>Operación realizada.
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
 <?php
 endif; ?>
 
@@ -46,12 +47,12 @@ endif; ?>
     </div>
     <div class="col-6 col-lg-3">
         <div class="metric-card">
-            <a href="/admin/export-csv" class="metric-icon bg-warning-soft text-decoration-none">
+            <a href="<?= $base_path?>/admin/export-csv" class="metric-icon bg-warning-soft text-decoration-none">
                 <i class="bi bi-file-earmark-spreadsheet text-warning"></i>
             </a>
             <div class="ms-3">
                 <div class="metric-label">Exportar CSV</div>
-                <div class="metric-value"><a href="/admin/export-csv"
+                <div class="metric-value"><a href="<?= $base_path?>/admin/export-csv"
                         class="btn btn-sm btn-outline-secondary">Descargar</a></div>
             </div>
         </div>
@@ -62,7 +63,7 @@ endif; ?>
 <div class="admin-card mb-4">
     <div class="admin-card-header">
         <i class="bi bi-calendar3 me-2"></i>Próximos turnos (pagados)
-        <a href="/admin/appointments" class="btn btn-sm btn-outline-primary ms-auto">Ver todos</a>
+        <a href="<?= $base_path?>/admin/appointments" class="btn btn-sm btn-outline-primary ms-auto">Ver todos</a>
     </div>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
