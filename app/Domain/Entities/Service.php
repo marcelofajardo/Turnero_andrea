@@ -73,6 +73,16 @@ final class Service
         return $this->sortOrder;
     }
 
+    public function getMpAccessToken(): ?string
+    {
+        return $this->mpAccessToken;
+    }
+
+    public function getMpPublicKey(): ?string
+    {
+        return $this->mpPublicKey;
+    }
+
     public function activate(): void
     {
         $this->isActive = true;
