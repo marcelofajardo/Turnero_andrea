@@ -99,6 +99,8 @@ $routes = [
         '/admin/services/delete' => [AdminController::class , 'deleteService'],
         '/admin/hours/save' => [AdminController::class , 'saveHours'],
         '/admin/settings/save' => [AdminController::class , 'saveSettings'],
+        '/admin/appointments/update' => [AdminController::class , 'updateAppointment'],
+        '/admin/appointments/delete' => [AdminController::class , 'deleteAppointment'],
         '/cancelar' => [HomeController::class , 'cancel'],
     ],
 ];

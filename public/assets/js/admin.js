@@ -47,6 +47,15 @@
         });
     });
 
+    // ---- Delete Appointment Confirmation ----
+    document.querySelectorAll('.delete-appointment-form').forEach(form => {
+        form.addEventListener('submit', (e) => {
+            if (!confirm('¿Eliminar este turno definitivamente?')) {
+                e.preventDefault();
+            }
+        });
+    });
+
     // ---- Business Hours: Add Range ----
     document.querySelectorAll('.btn-add-range').forEach(btn => {
         btn.addEventListener('click', () => {

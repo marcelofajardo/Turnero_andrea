@@ -11,7 +11,7 @@ if (session_status() === PHP_SESSION_NONE)
             <select name="status" class="form-select form-select-sm">
                 <option value="">Todos</option>
                 <?php foreach (['pending', 'paid', 'cancelled', 'completed'] as $s): ?>
-                <option value="<?= $s?>" <?=($filters['status'] ?? '') === $s ? 'selected' : ''?>>
+                <option value="<?= $s?>" <?=($filters['status'] ?? '' )===$s ? 'selected' : '' ?>>
                     <?= ucfirst($s)?>
                 </option>
                 <?php
@@ -23,8 +23,8 @@ endforeach; ?>
             <select name="service" class="form-select form-select-sm">
                 <option value="">Todos</option>
                 <?php foreach ($services as $svc): ?>
-                <option value="<?= $svc->getId()?>" <?=($filters['service_id'] ?? '') == $svc->getId() ? 'selected' :
-        ''?>>
+                <option value="<?= $svc->getId()?>" <?=($filters['service_id'] ?? '' )==$svc->getId() ? 'selected' :
+                    ''?>>
                     <?= htmlspecialchars($svc->getName())?>
                 </option>
                 <?php
@@ -110,7 +110,7 @@ endforeach; ?>
                             <i class="bi bi-pencil"></i>
                         </button>
                         <form method="POST" action="<?= $base_path?>/admin/appointments/delete" style="display:inline"
-                            onsubmit="return confirm('¿Eliminar este turno?')">
+                            class="delete-appointment-form">
                             <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf)?>">
                             <input type="hidden" name="id" value="<?= $a['id']?>">
                             <button type="submit" class="btn btn-sm btn-outline-danger">
