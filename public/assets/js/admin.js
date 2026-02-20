@@ -66,13 +66,9 @@
     if (serviceSelector) {
         serviceSelector.addEventListener('change', () => {
             const serviceId = serviceSelector.value;
-            const url = new URL(window.location.href);
-            if (serviceId) {
-                url.searchParams.set('service_id', serviceId);
-            } else {
-                url.searchParams.delete('service_id');
-            }
-            window.location.href = url.toString();
+            const baseUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+            const newUrl = serviceId ? `${baseUrl}?service_id=${serviceId}` : baseUrl;
+            window.location.href = newUrl;
         });
     }
 

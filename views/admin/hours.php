@@ -21,7 +21,7 @@ endif; ?>
             <select id="serviceSelector" class="form-select form-select-sm w-auto">
                 <option value="">Global (todos los servicios)</option>
                 <?php foreach ($services as $svc): ?>
-                <option value="<?= $svc->getId()?>" <?=($serviceId ?? null) == $svc->getId() ? 'selected' : ''?>>
+                <option value="<?= $svc->getId()?>" <?=($serviceId ?? null)==$svc->getId() ? 'selected' : ''?>>
                     <?= htmlspecialchars($svc->getName())?>
                 </option>
                 <?php
@@ -29,6 +29,16 @@ endforeach; ?>
             </select>
         </div>
 
+        <?php if ($serviceId && empty($hours)): ?>
+        <div class="alert alert-info py-2 small">
+            <i class="bi bi-info-circle me-2"></i>
+            Este servicio no tiene horarios específicos y está usando los <strong>horarios Globales</strong>.
+            Al guardar cambios aquí, se crearán horarios exclusivos para este servicio.
+        </div>
+        <?php
+endif; ?>
+
+        <?php $base_path = $_ENV['APP_BASE_PATH'] ?? ''; ?>
         <form method="POST" action="<?= $base_path?>/admin/hours/save" id="hoursForm">
             <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf)?>">
             <input type="hidden" name="service_id" id="fServiceId" value="<?= $serviceId ?? ''?>">

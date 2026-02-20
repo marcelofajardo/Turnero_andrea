@@ -67,7 +67,7 @@ final class SettingsRepository
     // -------------------------------------------------------
 
     /** Return working hours (global optionally overridden per service) */
-    public function getBusinessHours(?int $serviceId = null): array
+    public function getBusinessHours(?int $serviceId = null, bool $fallback = true): array
     {
         if ($serviceId !== null) {
             // First try service-specific, fallback to global if none found
@@ -79,7 +79,7 @@ final class SettingsRepository
             $stmt->execute([':sid' => $serviceId]);
             $rows = $stmt->fetchAll();
 
-            if (!empty($rows))
+            if (!empty($rows) || !$fallback)
                 return $rows;
         }
 
