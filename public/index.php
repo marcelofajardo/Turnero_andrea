@@ -4,23 +4,22 @@ declare(strict_types=1);
 
 /**
  * Front Controller — single entry point for all HTTP requests.
- *
- * Responsibilities:
- *  1. Bootstrap: autoload, env, session
- *  2. Security headers
- *  3. Route dispatch
- *  4. Centralized error handling
  */
 
-// --- Error handling (all errors throw exceptions in dev) ---
+// --- Error handling ---
 ini_set('display_errors', ($_ENV['APP_DEBUG'] ?? 'false') === 'true' ? '1' : '0');
-$_ENV['APP_DEBUG'] ?? set_error_handler(static function (int $errno, string $errstr, string $errfile, int $errline): never {
+set_error_handler(static function (int $errno, string $errstr, string $errfile, int $errline): never {
     throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 });
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 use Dotenv\Dotenv;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ApiController;
+use App\Http\Controllers\WebhookController;
 
 // --- Load environment ---
 $dotenv = Dotenv::createMutable(dirname(__DIR__));
@@ -35,7 +34,7 @@ session_name($_ENV['SESSION_NAME'] ?? 'turnero_session');
 session_set_cookie_params([
     'lifetime' => (int)($_ENV['SESSION_LIFETIME'] ?? 120) * 60,
     'path' => '/',
-    'secure' => false, // Set to true in production HTTPS
+    'secure' => false,
     'httponly' => true,
     'samesite' => 'Lax',
 ]);
@@ -50,27 +49,29 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-i
 // --- Timezone ---
 date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'America/Argentina/Buenos_Aires');
 
-// --- Maintenance mode ---
-if (($_ENV['MAINTENANCE_MODE'] ?? 'false') === 'true') {
-    http_response_code(503);
-    die('<h1>En Mantenimiento</h1><p>Volvemos pronto.</p>');
-}
-
 // --- Router ---
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\ApiController;
-use App\Http\Controllers\WebhookController;
-
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = rtrim($uri, '/') ?: '/';
 
-// --- DEBUG: Log for Hostinger troubleshooting ---
-\App\Shared\Logging\AppLogger::debug("Routing attempt", ['uri' => $uri, 'method' => $method, 'raw_uri' => $_SERVER['REQUEST_URI']]);
+// SUBFOLDER HANDLING
+$basePath = $_ENV['APP_BASE_PATH'] ?? ''; // e.g. /turnero
+$prefixes = array_filter([$basePath . '/public', $basePath, '/public']);
 
-// --- Route table ---
+$targetUri = $uri;
+foreach ($prefixes as $prefix) {
+    if (!empty($prefix) && str_starts_with($uri, $prefix)) {
+        $targetUri = substr($uri, strlen($prefix)) ?: '/';
+        break;
+    }
+}
+
+\App\Shared\Logging\AppLogger::debug("Routing attempt", [
+    'method' => $method,
+    'raw_uri' => $_SERVER['REQUEST_URI'],
+    'target_uri' => $targetUri
+]);
+
 $routes = [
     'GET' => [
         '/' => [HomeController::class , 'index'],
@@ -102,22 +103,20 @@ $routes = [
     ],
 ];
 
-// --- Dispatch ---
 try {
-    if (isset($routes[$method][$uri])) {
-        [$controllerClass, $action] = $routes[$method][$uri];
-        $controller = new $controllerClass();
-        $controller->$action();
+    if (isset($routes[$method][$targetUri])) {
+        [$controllerClass, $action] = $routes[$method][$targetUri];
+        (new $controllerClass())->$action();
     }
     else {
         http_response_code(404);
-        // Try to load a 404 view
         $notFoundView = dirname(__DIR__) . '/views/public/404.php';
         if (file_exists($notFoundView)) {
+            $debugUri = "$targetUri (Raw: $uri)";
             require $notFoundView;
         }
         else {
-            echo '<h1>404 — Página no encontrada</h1>';
+            echo "<h1>404 — Página no encontrada</h1><p>URI: $targetUri</p>";
         }
     }
 }
@@ -125,16 +124,13 @@ catch (\Throwable $e) {
     \App\Shared\Logging\AppLogger::error('Unhandled exception', [
         'message' => $e->getMessage(),
         'file' => $e->getFile(),
-        'line' => $e->getLine(),
-        'trace' => substr($e->getTraceAsString(), 0, 2000),
+        'line' => $e->getLine()
     ]);
-
+    http_response_code(500);
     if (($_ENV['APP_DEBUG'] ?? 'false') === 'true') {
-        http_response_code(500);
         echo '<pre>' . htmlspecialchars("{$e->getMessage()}\n{$e->getFile()}:{$e->getLine()}") . '</pre>';
     }
     else {
-        http_response_code(500);
-        echo '<h1>Error interno</h1><p>Por favor intenta más tarde.</p>';
+        echo '<h1>Error interno</h1>';
     }
 }
