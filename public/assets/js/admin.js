@@ -23,6 +23,8 @@
             document.getElementById('edit_desc').value = btn.dataset.desc;
             document.getElementById('edit_sort').value = btn.dataset.sort;
             document.getElementById('edit_active').checked = btn.dataset.active === '1';
+            document.getElementById('edit_mp_token').value = btn.dataset.mpToken || '';
+            document.getElementById('edit_mp_key').value = btn.dataset.mpKey || '';
 
             const modal = new bootstrap.Modal(document.getElementById('editServiceModal'));
             modal.show();

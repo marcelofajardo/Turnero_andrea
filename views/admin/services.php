@@ -42,17 +42,21 @@ endif; ?>
                 <label class="form-label">Orden</label>
                 <input type="number" name="sort_order" class="form-control" value="0" min="0">
             </div>
-            <div class="col-6 col-md-2 d-flex align-items-end">
-                <div class="form-check">
-                    <input type="checkbox" name="is_active" id="is_active" class="form-check-input" checked>
-                    <label for="is_active" class="form-check-label">Activo</label>
-                </div>
-            </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary"><i class="bi bi-plus me-1"></i>Crear servicio</button>
-            </div>
-        </form>
     </div>
+</div>
+<div class="col-12 col-md-6">
+    <label class="form-label text-primary"><i class="bi bi-key me-1"></i>Mercado Pago Access Token</label>
+    <input type="password" name="mp_access_token" class="form-control" placeholder="APP_USR-...">
+</div>
+<div class="col-12 col-md-6">
+    <label class="form-label text-primary"><i class="bi bi-shield-lock me-1"></i>Mercado Pago Public Key</label>
+    <input type="text" name="mp_public_key" class="form-control" placeholder="APP_USR-...">
+</div>
+<div class="col-12">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-plus me-1"></i>Crear servicio</button>
+</div>
+</form>
+</div>
 </div>
 
 <!-- Services list -->
@@ -95,7 +99,9 @@ endif; ?>
                             data-price="<?= $svc->getPrice()?>" data-dur="<?= $svc->getDurationMinutes()?>"
                             data-color="<?= htmlspecialchars($svc->getColor())?>"
                             data-desc="<?= htmlspecialchars($svc->getDescription() ?? '')?>"
-                            data-active="<?= $svc->isActive() ? '1' : '0'?>" data-sort="<?= $svc->getSortOrder()?>">
+                            data-active="<?= $svc->isActive() ? '1' : '0'?>" data-sort="<?= $svc->getSortOrder()?>"
+                            data-mp-token="<?= htmlspecialchars($svc->getMpAccessToken() ?? '')?>"
+                            data-mp-key="<?= htmlspecialchars($svc->getMpPublicKey() ?? '')?>">
                             <i class="bi bi-pencil"></i>
                         </button>
                         <form method="POST" action="<?= $base_path?>/admin/services/delete" style="display:inline"
@@ -148,6 +154,15 @@ endif; ?>
                     </div>
                     <div class="form-check mt-2"><input type="checkbox" name="is_active" id="edit_active"
                             class="form-check-input"><label for="edit_active" class="form-check-label">Activo</label>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <label class="form-label text-primary">Mercado Pago Access Token</label>
+                        <input type="password" name="mp_access_token" id="edit_mp_token" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-primary">Mercado Pago Public Key</label>
+                        <input type="text" name="mp_public_key" id="edit_mp_key" class="form-control">
                     </div>
                 </div>
                 <div class="modal-footer">

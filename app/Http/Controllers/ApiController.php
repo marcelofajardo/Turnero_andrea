@@ -89,6 +89,7 @@ final class ApiController extends BaseController
                 $appointment->getId(),
                 $service?->getName() ?? 'Turno',
                 (float) ($service?->getPrice() ?? 0),
+                $dto->serviceId
             );
 
             $this->json(true, 'Turno creado. Redirigiendo al pago.', [

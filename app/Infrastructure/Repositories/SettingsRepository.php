@@ -99,8 +99,8 @@ final class SettingsRepository
         ?int $serviceId = null
         ): void
     {
-        $sql = "INSERT INTO business_hours (service_id, day_of_week, start_time, end_time)
-                VALUES (:sid, :dow, :start, :end)";
+        $sql = "INSERT INTO business_hours (service_id, day_of_week, start_time, end_time, is_active)
+                VALUES (:sid, :dow, :start, :end, 1)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             ':sid' => $serviceId,
@@ -120,5 +120,5 @@ final class SettingsRepository
             $stmt = $this->pdo->prepare('DELETE FROM business_hours WHERE service_id = :sid');
             $stmt->execute([':sid' => $serviceId]);
         }
-     }
+    }
 }

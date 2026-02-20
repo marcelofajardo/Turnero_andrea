@@ -19,6 +19,8 @@ final class Service
         private string $color,
         private bool $isActive,
         private int $sortOrder,
+        private ?string $mpAccessToken = null,
+        private ?string $mpPublicKey = null,
     ) {}
 
     public function getId(): ?int

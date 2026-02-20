@@ -53,20 +53,22 @@ final class ServiceRepository implements ServiceRepositoryInterface
     public function save(Service $service): Service
     {
         $sql = "INSERT INTO services
-                    (name, slug, description, price, duration_minutes, color, is_active, sort_order)
+                    (name, slug, description, price, duration_minutes, color, is_active, sort_order, mp_access_token, mp_public_key)
                 VALUES
-                    (:name, :slug, :desc, :price, :dur, :color, :active, :sort)";
+                    (:name, :slug, :desc, :price, :dur, :color, :active, :sort, :mp_token, :mp_key)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
-            ':name'   => $service->getName(),
-            ':slug'   => $service->getSlug(),
-            ':desc'   => $service->getDescription(),
-            ':price'  => $service->getPrice(),
-            ':dur'    => $service->getDurationMinutes(),
-            ':color'  => $service->getColor(),
-            ':active' => $service->isActive() ? 1 : 0,
-            ':sort'   => $service->getSortOrder(),
+            ':name'     => $service->getName(),
+            ':slug'     => $service->getSlug(),
+            ':desc'     => $service->getDescription(),
+            ':price'    => $service->getPrice(),
+            ':dur'      => $service->getDurationMinutes(),
+            ':color'    => $service->getColor(),
+            ':active'   => $service->isActive() ? 1 : 0,
+            ':sort'     => $service->getSortOrder(),
+            ':mp_token' => $service->getMpAccessToken(),
+            ':mp_key'   => $service->getMpPublicKey(),
         ]);
 
         return $this->findById((int) $this->pdo->lastInsertId());
@@ -83,20 +85,24 @@ final class ServiceRepository implements ServiceRepositoryInterface
                     color            = :color,
                     is_active        = :active,
                     sort_order       = :sort,
+                    mp_access_token  = :mp_token,
+                    mp_public_key    = :mp_key,
                     updated_at       = NOW()
                 WHERE id = :id";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
-            ':name'   => $service->getName(),
-            ':slug'   => $service->getSlug(),
-            ':desc'   => $service->getDescription(),
-            ':price'  => $service->getPrice(),
-            ':dur'    => $service->getDurationMinutes(),
-            ':color'  => $service->getColor(),
-            ':active' => $service->isActive() ? 1 : 0,
-            ':sort'   => $service->getSortOrder(),
-            ':id'     => $service->getId(),
+            ':name'     => $service->getName(),
+            ':slug'     => $service->getSlug(),
+            ':desc'     => $service->getDescription(),
+            ':price'    => $service->getPrice(),
+            ':dur'      => $service->getDurationMinutes(),
+            ':color'    => $service->getColor(),
+            ':active'   => $service->isActive() ? 1 : 0,
+            ':sort'     => $service->getSortOrder(),
+            ':mp_token' => $service->getMpAccessToken(),
+            ':mp_key'   => $service->getMpPublicKey(),
+            ':id'       => $service->getId(),
         ]);
     }
 
@@ -122,6 +128,8 @@ final class ServiceRepository implements ServiceRepositoryInterface
             color:           $row['color'],
             isActive:        (bool) $row['is_active'],
             sortOrder:       (int) $row['sort_order'],
+            mpAccessToken:   $row['mp_access_token'] ?? null,
+            mpPublicKey:     $row['mp_public_key'] ?? null,
         );
     }
 }

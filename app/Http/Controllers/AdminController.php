@@ -120,6 +120,8 @@ final class AdminController extends BaseController
             color:           $_POST['color'] ?? '#5AA9E6',
             isActive:        isset($_POST['is_active']),
             sortOrder:       (int) ($_POST['sort_order'] ?? 0),
+            mpAccessToken:   trim($_POST['mp_access_token'] ?? '') ?: null,
+            mpPublicKey:     trim($_POST['mp_public_key']   ?? '') ?: null,
         );
 
         $this->serviceRepo->save($service);
@@ -148,6 +150,8 @@ final class AdminController extends BaseController
             color:           $_POST['color'] ?? '#5AA9E6',
             isActive:        isset($_POST['is_active']),
             sortOrder:       (int) ($_POST['sort_order'] ?? 0),
+            mpAccessToken:   trim($_POST['mp_access_token'] ?? '') ?: null,
+            mpPublicKey:     trim($_POST['mp_public_key']   ?? '') ?: null,
         );
 
         $this->serviceRepo->update($updated);

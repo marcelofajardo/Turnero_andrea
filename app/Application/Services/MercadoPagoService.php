@@ -35,9 +35,9 @@ final class MercadoPagoService
         $this->initSdk();
     }
 
-    private function initSdk(): void
+    private function initSdk(?string $customAccessToken = null): void
     {
-        $accessToken = $_ENV['MP_ACCESS_TOKEN'] ?? '';
+        $accessToken = $customAccessToken ?: ($_ENV['MP_ACCESS_TOKEN'] ?? '');
 
         if (empty($accessToken)) {
             AppLogger::warning('MercadoPago access token not configured.');
@@ -54,9 +54,18 @@ final class MercadoPagoService
      * @return array{'init_point': string, 'preference_id': string}
      * @throws PaymentException
      */
-    public function createPreference(int $appointmentId, string $serviceTitle, float $amount): array
+    public function createPreference(int $appointmentId, string $serviceTitle, float $amount, ?int $serviceId = null): array
     {
         try {
+            // Re-init SDK if service-specific credentials exist
+            if ($serviceId) {
+                $serviceRepo = new \App\Infrastructure\Repositories\ServiceRepository();
+                $service = $serviceRepo->findById($serviceId);
+                if ($service && $service->getMpAccessToken()) {
+                    $this->initSdk($service->getMpAccessToken());
+                }
+            }
+
             $appUrl = rtrim($_ENV['APP_URL'] ?? 'http://localhost', '/');
             $basePath = $_ENV['APP_BASE_PATH'] ?? '';
             $fullUrl = $appUrl . $basePath;
@@ -76,7 +85,7 @@ final class MercadoPagoService
                     'pending' => "{$fullUrl}/pago/pendiente?appt={$appointmentId}",
                 ],
                 'auto_return'         => 'approved',
-                'notification_url'    => "{$fullUrl}/webhook/mercadopago",
+                'notification_url'    => "{$fullUrl}/webhook/mercadopago" . ($serviceId ? "?sid={$serviceId}" : ""),
                 'external_reference'  => (string) $appointmentId,
                 'expires'             => true,
                 'expiration_date_to'  => date('Y-m-d\TH:i:s.000P', strtotime('+30 minutes')),
@@ -112,6 +121,16 @@ final class MercadoPagoService
      */
     public function processWebhook(array $payload): void
     {
+        // Check for service_id in query string (from notification_url)
+        $serviceId = !empty($_GET['sid']) ? (int) $_GET['sid'] : null;
+        if ($serviceId) {
+            $serviceRepo = new \App\Infrastructure\Repositories\ServiceRepository();
+            $service = $serviceRepo->findById($serviceId);
+            if ($service && $service->getMpAccessToken()) {
+                $this->initSdk($service->getMpAccessToken());
+            }
+        }
+
         $type      = $payload['type']    ?? $payload['topic'] ?? '';
         $paymentId = $payload['data']['id'] ?? $payload['data_id'] ?? null;
 
