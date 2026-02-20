@@ -1,6 +1,4 @@
-Options -Indexes -MultiViews +FollowSymLinks
 RewriteEngine On
-RewriteBase /
 
 # Pretty URLs — all traffic through front controller
 RewriteCond %{REQUEST_FILENAME} !-f
