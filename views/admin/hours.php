@@ -21,7 +21,7 @@ endif; ?>
             <select id="serviceSelector" class="form-select form-select-sm w-auto">
                 <option value="">Global (todos los servicios)</option>
                 <?php foreach ($services as $svc): ?>
-                <option value="<?= $svc->getId()?>">
+                <option value="<?= $svc->getId()?>" <?=($serviceId ?? null)==$svc->getId() ? 'selected' : ''?>>
                     <?= htmlspecialchars($svc->getName())?>
                 </option>
                 <?php
@@ -31,7 +31,7 @@ endforeach; ?>
 
         <form method="POST" action="<?= $base_path?>/admin/hours/save" id="hoursForm">
             <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf)?>">
-            <input type="hidden" name="service_id" id="fServiceId" value="">
+            <input type="hidden" name="service_id" id="fServiceId" value="<?= $serviceId ?? ''?>">
 
             <div class="table-responsive">
                 <table class="table align-middle">

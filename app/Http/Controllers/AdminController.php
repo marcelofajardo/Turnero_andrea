@@ -170,10 +170,11 @@ final class AdminController extends BaseController
     public function hours(): void
     {
         $this->boot();
-        $hours    = $this->settingsRepo->getBusinessHours();
+        $serviceId = !empty($_GET['service_id']) ? (int) $_GET['service_id'] : null;
+        $hours    = $this->settingsRepo->getBusinessHours($serviceId);
         $services = $this->serviceRepo->findAll(false);
         $csrf     = CsrfHelper::getToken();
-        $this->view('admin.hours', compact('hours', 'services', 'csrf'));
+        $this->view('admin.hours', compact('hours', 'services', 'csrf', 'serviceId'));
     }
 
     public function saveHours(): void

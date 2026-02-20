@@ -58,10 +58,16 @@
 
     // ---- Service selector for hours form ----
     const serviceSelector = document.getElementById('serviceSelector');
-    const fServiceId = document.getElementById('fServiceId');
-    if (serviceSelector && fServiceId) {
+    if (serviceSelector) {
         serviceSelector.addEventListener('change', () => {
-            fServiceId.value = serviceSelector.value;
+            const serviceId = serviceSelector.value;
+            const url = new URL(window.location.href);
+            if (serviceId) {
+                url.searchParams.set('service_id', serviceId);
+            } else {
+                url.searchParams.delete('service_id');
+            }
+            window.location.href = url.toString();
         });
     }
 
