@@ -183,24 +183,50 @@ final class AdminController extends BaseController
         (new \App\Http\Middleware\CsrfMiddleware())->handle();
 
         $serviceId = !empty($_POST['service_id']) ? (int) $_POST['service_id'] : null;
-        $this->settingsRepo->deleteBusinessHoursByServiceId($serviceId);
-
         $days   = $_POST['day']   ?? [];
         $starts = $_POST['start'] ?? [];
         $ends   = $_POST['end']   ?? [];
 
-        foreach ($days as $i => $day) {
-            if (!empty($starts[$i]) && !empty($ends[$i])) {
-                $this->settingsRepo->saveBusinessHour(
-                    (int) $day,
-                    $starts[$i],
-                    $ends[$i],
-                    $serviceId
-                );
+        try {
+            $this->pdo->beginTransaction();
+            
+            \App\Shared\Logging\AppLogger::info("Saving business hours (start)", [
+                'service_id' => $serviceId, 
+                'rows_count' => count($days)
+            ]);
+
+            $this->settingsRepo->deleteBusinessHoursByServiceId($serviceId);
+
+            $count = 0;
+            foreach ($days as $i => $day) {
+                if (!empty($starts[$i]) && !empty($ends[$i])) {
+                    $this->settingsRepo->saveBusinessHour(
+                        (int) $day,
+                        $starts[$i],
+                        $ends[$i],
+                        $serviceId
+                    );
+                    $count++;
+                }
             }
+            
+            $this->pdo->commit();
+            \App\Shared\Logging\AppLogger::info("Saved business hours (success)", [
+                'service_id' => $serviceId, 
+                'inserted' => $count
+            ]);
+        } catch (\Throwable $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            \App\Shared\Logging\AppLogger::error("Failed to save business hours", [
+                'service_id' => $serviceId,
+                'error' => $e->getMessage()
+            ]);
+            $this->redirect('/admin/hours?error=db' . ($serviceId ? "&service_id={$serviceId}" : ""));
         }
 
-        $this->redirect('/admin/hours?msg=saved');
+        $this->redirect('/admin/hours?msg=saved' . ($serviceId ? "&service_id={$serviceId}" : ""));
     }
 
     // -------------------------------------------------------
