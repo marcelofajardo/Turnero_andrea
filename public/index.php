@@ -67,6 +67,9 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = rtrim($uri, '/') ?: '/';
 
+// --- DEBUG: Log for Hostinger troubleshooting ---
+\App\Shared\Logging\AppLogger::debug("Routing attempt", ['uri' => $uri, 'method' => $method, 'raw_uri' => $_SERVER['REQUEST_URI']]);
+
 // --- Route table ---
 $routes = [
     'GET' => [
