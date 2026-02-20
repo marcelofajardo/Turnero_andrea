@@ -5,7 +5,8 @@ if (session_status() === PHP_SESSION_NONE)
 
 <?php if (!empty($_GET['msg'])): ?>
 <div class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle me-2"></i>Horarios guardados.
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
 <?php
 endif; ?>
 
@@ -28,7 +29,7 @@ endforeach; ?>
             </select>
         </div>
 
-        <form method="POST" action="/admin/hours/save" id="hoursForm">
+        <form method="POST" action="<?= $base_path?>/admin/hours/save" id="hoursForm">
             <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf)?>">
             <input type="hidden" name="service_id" id="fServiceId" value="">
 

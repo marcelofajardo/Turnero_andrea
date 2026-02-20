@@ -1,3 +1,4 @@
+<?php $base_path = $_ENV['APP_BASE_PATH'] ?? ''; ?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -9,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="/assets/css/style.css" rel="stylesheet">
-    <link href="/assets/css/admin.css" rel="stylesheet">
+    <link href="<?= $base_path?>/assets/css/style.css" rel="stylesheet">
+    <link href="<?= $base_path?>/assets/css/admin.css" rel="stylesheet">
 </head>
 
 <body class="login-body">
@@ -30,7 +31,7 @@
             <?php
 endif; ?>
 
-            <form method="POST" action="/login" autocomplete="off">
+            <form method="POST" action="<?= $base_path?>/login" autocomplete="off">
                 <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf)?>">
                 <div class="mb-3">
                     <label class="form-label fw-500">Usuario</label>
@@ -54,7 +55,8 @@ endif; ?>
             </form>
 
             <p class="text-center mt-3 mb-0">
-                <a href="/" class="text-muted small"><i class="bi bi-arrow-left me-1"></i>Volver al sitio</a>
+                <a href="<?= $base_path?>/" class="text-muted small"><i class="bi bi-arrow-left me-1"></i>Volver al
+                    sitio</a>
             </p>
         </div>
     </div>

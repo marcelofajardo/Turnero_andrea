@@ -5,13 +5,13 @@ if (session_status() === PHP_SESSION_NONE)
 
 <!-- Filters -->
 <div class="admin-card mb-3">
-    <form method="GET" action="/admin/appointments" class="row g-2 align-items-end">
+    <form method="GET" action="<?= $base_path?>/admin/appointments" class="row g-2 align-items-end">
         <div class="col-12 col-sm-6 col-lg-2">
             <label class="form-label small">Estado</label>
             <select name="status" class="form-select form-select-sm">
                 <option value="">Todos</option>
                 <?php foreach (['pending', 'paid', 'cancelled', 'completed'] as $s): ?>
-                <option value="<?= $s?>" <?=($filters['status'] ?? '') === $s ? 'selected' : ''?>>
+                <option value="<?= $s?>" <?=($filters['status'] ?? '' )===$s ? 'selected' : '' ?>>
                     <?= ucfirst($s)?>
                 </option>
                 <?php
@@ -23,7 +23,8 @@ endforeach; ?>
             <select name="service" class="form-select form-select-sm">
                 <option value="">Todos</option>
                 <?php foreach ($services as $svc): ?>
-                <option value="<?= $svc->getId()?>" <?=($filters['service_id'] ?? '') == $svc->getId() ? 'selected' : ''?>>
+                <option value="<?= $svc->getId()?>" <?=($filters['service_id'] ?? '' )==$svc->getId() ? 'selected' :
+                    ''?>>
                     <?= htmlspecialchars($svc->getName())?>
                 </option>
                 <?php
@@ -55,7 +56,7 @@ endforeach; ?>
     <div class="admin-card-header">
         <i class="bi bi-list-ul me-2"></i>
         <?= number_format($total)?> turno(s)
-        <a href="/admin/export-csv<?=!empty($_SERVER['QUERY_STRING']) ? '?' . htmlspecialchars($_SERVER['QUERY_STRING']) : ''?>"
+        <a href="<?= $base_path?>/admin/export-csv<?=!empty($_SERVER['QUERY_STRING']) ? '?' . htmlspecialchars($_SERVER['QUERY_STRING']) : ''?>"
             class="btn btn-sm btn-outline-secondary ms-auto">
             <i class="bi bi-download me-1"></i>CSV
         </a>

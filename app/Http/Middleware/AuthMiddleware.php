@@ -17,7 +17,8 @@ final class AuthMiddleware
         }
 
         if (empty($_SESSION['admin_id'])) {
-            header('Location: /login');
+            $base = $_ENV['APP_BASE_PATH'] ?? '';
+            header('Location: ' . $base . '/login');
             exit;
         }
     }

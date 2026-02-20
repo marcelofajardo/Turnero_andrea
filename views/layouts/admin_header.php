@@ -1,3 +1,4 @@
+<?php $base_path = $_ENV['APP_BASE_PATH'] ?? ''; ?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -12,8 +13,8 @@
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="/assets/css/style.css" rel="stylesheet">
-    <link href="/assets/css/admin.css" rel="stylesheet">
+    <link href="<?= $base_path?>/assets/css/style.css" rel="stylesheet">
+    <link href="<?= $base_path?>/assets/css/admin.css" rel="stylesheet">
 </head>
 
 <body class="admin-body">
@@ -27,36 +28,37 @@
             </div>
             <ul class="sidebar-nav">
                 <li>
-                    <a href="/admin/dashboard"
+                    <a href="<?= $base_path?>/admin/dashboard"
                         class="<?= str_contains($_SERVER['REQUEST_URI'], 'dashboard') ? 'active' : ''?>">
                         <i class="bi bi-speedometer2"></i> Dashboard
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/appointments"
+                    <a href="<?= $base_path?>/admin/appointments"
                         class="<?= str_contains($_SERVER['REQUEST_URI'], 'appointments') ? 'active' : ''?>">
                         <i class="bi bi-calendar3"></i> Turnos
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/services"
+                    <a href="<?= $base_path?>/admin/services"
                         class="<?= str_contains($_SERVER['REQUEST_URI'], 'services') ? 'active' : ''?>">
                         <i class="bi bi-grid-1x2"></i> Servicios
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/hours" class="<?= str_contains($_SERVER['REQUEST_URI'], 'hours') ? 'active' : ''?>">
+                    <a href="<?= $base_path?>/admin/hours"
+                        class="<?= str_contains($_SERVER['REQUEST_URI'], 'hours') ? 'active' : ''?>">
                         <i class="bi bi-clock"></i> Horarios
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/settings"
+                    <a href="<?= $base_path?>/admin/settings"
                         class="<?= str_contains($_SERVER['REQUEST_URI'], 'settings') ? 'active' : ''?>">
                         <i class="bi bi-gear"></i> Configuración
                     </a>
                 </li>
                 <li class="mt-auto">
-                    <a href="/logout" class="text-danger">
+                    <a href="<?= $base_path?>/logout" class="text-danger">
                         <i class="bi bi-box-arrow-right"></i> Salir
                     </a>
                 </li>

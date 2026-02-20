@@ -48,6 +48,13 @@ abstract class BaseController
      */
     protected function redirect(string $url): never
     {
+        $base = $_ENV['APP_BASE_PATH'] ?? '';
+
+        // If it's a relative path starting with /, prepend the base path
+        if ($base && str_starts_with($url, '/') && !str_starts_with($url, '//')) {
+            $url = $base . $url;
+        }
+
         header("Location: {$url}");
         exit;
     }

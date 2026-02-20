@@ -19,7 +19,7 @@ foreach ($settings as $row) {
 <div class="admin-card">
     <div class="admin-card-header"><i class="bi bi-gear me-2"></i>Configuración general</div>
     <div class="admin-card-body">
-        <form method="POST" action="/admin/settings/save" class="row g-3">
+        <form method="POST" action="<?= $base_path?>/admin/settings/save" class="row g-3">
             <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf)?>">
 
             <div class="col-12">
@@ -58,7 +58,7 @@ foreach ($settings as $row) {
                 <label class="form-label">Zona horaria</label>
                 <select name="timezone" class="form-select">
                     <?php foreach (\DateTimeZone::listIdentifiers(\DateTimeZone::AMERICA) as $tz): ?>
-                    <option value="<?= $tz?>" <?=($s['timezone'] ?? '') === $tz ? 'selected' : ''?>>
+                    <option value="<?= $tz?>" <?=($s['timezone'] ?? '' )===$tz ? 'selected' : '' ?>>
                         <?= $tz?>
                     </option>
                     <?php
@@ -72,8 +72,10 @@ endforeach; ?>
             <div class="col-6 col-md-3">
                 <label class="form-label">Modo sandbox</label>
                 <select name="mp_sandbox" class="form-select">
-                    <option value="true" <?=($s['mp_sandbox'] ?? 'true') === 'true' ? 'selected' : ''?>>Sí (pruebas)</option>
-                    <option value="false" <?=($s['mp_sandbox'] ?? 'true') === 'false' ? 'selected' : ''?>>No (producción)
+                    <option value="true" <?=($s['mp_sandbox'] ?? 'true' )==='true' ? 'selected' : '' ?>>Sí (pruebas)
+                    </option>
+                    <option value="false" <?=($s['mp_sandbox'] ?? 'true' )==='false' ? 'selected' : '' ?>>No
+                        (producción)
                     </option>
                 </select>
             </div>

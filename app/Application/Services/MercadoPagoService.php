@@ -58,6 +58,8 @@ final class MercadoPagoService
     {
         try {
             $appUrl = rtrim($_ENV['APP_URL'] ?? 'http://localhost', '/');
+            $basePath = $_ENV['APP_BASE_PATH'] ?? '';
+            $fullUrl = $appUrl . $basePath;
 
             $client = new PreferenceClient();
 
@@ -69,12 +71,12 @@ final class MercadoPagoService
                     'currency_id' => 'ARS',
                 ]],
                 'back_urls' => [
-                    'success' => "{$appUrl}/pago/exito?appt={$appointmentId}",
-                    'failure' => "{$appUrl}/pago/fallo?appt={$appointmentId}",
-                    'pending' => "{$appUrl}/pago/pendiente?appt={$appointmentId}",
+                    'success' => "{$fullUrl}/pago/exito?appt={$appointmentId}",
+                    'failure' => "{$fullUrl}/pago/fallo?appt={$appointmentId}",
+                    'pending' => "{$fullUrl}/pago/pendiente?appt={$appointmentId}",
                 ],
                 'auto_return'         => 'approved',
-                'notification_url'    => "{$appUrl}/webhook/mercadopago",
+                'notification_url'    => "{$fullUrl}/webhook/mercadopago",
                 'external_reference'  => (string) $appointmentId,
                 'expires'             => true,
                 'expiration_date_to'  => date('Y-m-d\TH:i:s.000P', strtotime('+30 minutes')),

@@ -16,7 +16,7 @@ endif; ?>
 <div class="admin-card mb-4">
     <div class="admin-card-header"><i class="bi bi-plus-circle me-2"></i>Nuevo servicio</div>
     <div class="admin-card-body">
-        <form method="POST" action="/admin/services/store" class="row g-3">
+        <form method="POST" action="<?= $base_path?>/admin/services/store" class="row g-3">
             <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf)?>">
             <div class="col-12 col-md-4">
                 <label class="form-label">Nombre <span class="text-danger">*</span></label>
@@ -75,8 +75,7 @@ endif; ?>
                 <?php foreach ($services as $svc): ?>
                 <tr>
                     <td>
-                        <span class="service-dot-sm"
-                            style="background:<?= htmlspecialchars($svc->getColor())?>"></span>
+                        <span class="service-dot-sm" style="background:<?= htmlspecialchars($svc->getColor())?>"></span>
                         <?= htmlspecialchars($svc->getName())?>
                     </td>
                     <td>
@@ -99,7 +98,7 @@ endif; ?>
                             data-active="<?= $svc->isActive() ? '1' : '0'?>" data-sort="<?= $svc->getSortOrder()?>">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <form method="POST" action="/admin/services/delete" style="display:inline"
+                        <form method="POST" action="<?= $base_path?>/admin/services/delete" style="display:inline"
                             onsubmit="return confirm('¿Eliminar este servicio?')">
                             <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf)?>">
                             <input type="hidden" name="id" value="<?= $svc->getId()?>">
@@ -129,7 +128,7 @@ endif; ?>
                 <h5 class="modal-title">Editar servicio</h5><button type="button" class="btn-close"
                     data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="/admin/services/update">
+            <form method="POST" action="<?= $base_path?>/admin/services/update">
                 <div class="modal-body">
                     <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf)?>">
                     <input type="hidden" name="id" id="edit_id">
