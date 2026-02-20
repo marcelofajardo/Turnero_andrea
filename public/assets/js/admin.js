@@ -53,9 +53,12 @@
         });
     });
 
-    // ---- Business Hours: Remove Range (existing rows) ----
-    document.querySelectorAll('.btn-rm-range').forEach(btn => {
-        btn.addEventListener('click', () => btn.closest('.hour-range-row').remove());
+    // ---- Business Hours: Remove Range (event delegation) ----
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-rm-range');
+        if (btn) {
+            btn.closest('.hour-range-row').remove();
+        }
     });
 
     // ---- Service selector for hours form ----

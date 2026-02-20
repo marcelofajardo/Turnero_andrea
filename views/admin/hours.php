@@ -21,7 +21,7 @@ endif; ?>
             <select id="serviceSelector" class="form-select form-select-sm w-auto">
                 <option value="">Global (todos los servicios)</option>
                 <?php foreach ($services as $svc): ?>
-                <option value="<?= $svc->getId()?>" <?=($serviceId ?? null)==$svc->getId() ? 'selected' : ''?>>
+                <option value="<?= $svc->getId()?>" <?=($serviceId ?? null) == $svc->getId() ? 'selected' : ''?>>
                     <?= htmlspecialchars($svc->getName())?>
                 </option>
                 <?php
@@ -56,7 +56,7 @@ foreach ($hours as $h) {
                             </td>
                             <td>
                                 <div class="hour-ranges" id="ranges-<?= $dayNum?>">
-                                    <?php $dayHours = $hoursByDay[$dayNum] ?? [['start_time' => '09:00:00', 'end_time' => '18:00:00']]; ?>
+                                    <?php $dayHours = $hoursByDay[$dayNum] ?? []; ?>
                                     <?php foreach ($dayHours as $h): ?>
                                     <div class="d-flex gap-2 align-items-center mb-1 hour-range-row">
                                         <input type="hidden" name="day[]" value="<?= $dayNum?>">
