@@ -31,6 +31,22 @@
         });
     });
 
+    // ---- Edit Appointment Modal ----
+    document.querySelectorAll('.btn-edit-appointment').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('edit_appt_id').value = btn.dataset.id;
+            document.getElementById('edit_appt_name').value = btn.dataset.name;
+            document.getElementById('edit_appt_phone').value = btn.dataset.phone;
+            document.getElementById('edit_appt_email').value = btn.dataset.email;
+            document.getElementById('edit_appt_status').value = btn.dataset.status;
+            document.getElementById('edit_appt_notes').value = btn.dataset.notes;
+            document.getElementById('edit_appt_mp_id').value = btn.dataset.mpId;
+
+            const modal = new bootstrap.Modal(document.getElementById('editAppointmentModal'));
+            modal.show();
+        });
+    });
+
     // ---- Business Hours: Add Range ----
     document.querySelectorAll('.btn-add-range').forEach(btn => {
         btn.addEventListener('click', () => {

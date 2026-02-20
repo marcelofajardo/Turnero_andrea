@@ -33,4 +33,6 @@ interface AppointmentRepositoryInterface
     public function save(Appointment $appointment): Appointment;
 
     public function update(Appointment $appointment): void;
+
+    public function delete(int $id): void;
 }

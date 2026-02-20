@@ -11,7 +11,7 @@ if (session_status() === PHP_SESSION_NONE)
             <select name="status" class="form-select form-select-sm">
                 <option value="">Todos</option>
                 <?php foreach (['pending', 'paid', 'cancelled', 'completed'] as $s): ?>
-                <option value="<?= $s?>" <?=($filters['status'] ?? '' )===$s ? 'selected' : '' ?>>
+                <option value="<?= $s?>" <?=($filters['status'] ?? '') === $s ? 'selected' : ''?>>
                     <?= ucfirst($s)?>
                 </option>
                 <?php
@@ -23,8 +23,8 @@ endforeach; ?>
             <select name="service" class="form-select form-select-sm">
                 <option value="">Todos</option>
                 <?php foreach ($services as $svc): ?>
-                <option value="<?= $svc->getId()?>" <?=($filters['service_id'] ?? '' )==$svc->getId() ? 'selected' :
-                    ''?>>
+                <option value="<?= $svc->getId()?>" <?=($filters['service_id'] ?? '') == $svc->getId() ? 'selected' :
+        ''?>>
                     <?= htmlspecialchars($svc->getName())?>
                 </option>
                 <?php
@@ -71,6 +71,7 @@ endforeach; ?>
                     <th>Cliente</th>
                     <th>Teléfono</th>
                     <th>Estado</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -99,13 +100,31 @@ endforeach; ?>
                     <td><span class="badge-status <?= $a['status']?>">
                             <?= $a['status']?>
                         </span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary btn-edit-appointment" data-id="<?= $a['id']?>"
+                            data-name="<?= htmlspecialchars($a['customer_name'])?>"
+                            data-phone="<?= htmlspecialchars($a['customer_phone'])?>"
+                            data-email="<?= htmlspecialchars($a['customer_email'] ?? '')?>"
+                            data-status="<?= $a['status']?>" data-notes="<?= htmlspecialchars($a['notes'] ?? '')?>"
+                            data-mp-id="<?= htmlspecialchars($a['mercadopago_payment_id'] ?? '')?>">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <form method="POST" action="<?= $base_path?>/admin/appointments/delete" style="display:inline"
+                            onsubmit="return confirm('¿Eliminar este turno?')">
+                            <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf)?>">
+                            <input type="hidden" name="id" value="<?= $a['id']?>">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 <?php
     endforeach; ?>
                 <?php
 else: ?>
                 <tr>
-                    <td colspan="6" class="text-center text-muted py-4">No hay turnos.</td>
+                    <td colspan="7" class="text-center text-muted py-4">No hay turnos.</td>
                 </tr>
                 <?php
 endif; ?>
@@ -131,6 +150,59 @@ endif; ?>
     </div>
     <?php
 endif; ?>
+</div>
+
+<!-- Edit Appointment Modal -->
+<div class="modal fade" id="editAppointmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Editar Turno</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="<?= $base_path?>/admin/appointments/update">
+                <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrf)?>">
+                <input type="hidden" name="id" id="edit_appt_id">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Cliente</label>
+                            <input type="text" name="customer_name" id="edit_appt_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Teléfono</label>
+                            <input type="text" name="customer_phone" id="edit_appt_phone" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="customer_email" id="edit_appt_email" class="form-control">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Estado</label>
+                            <select name="status" id="edit_appt_status" class="form-select">
+                                <option value="pending">Pendiente</option>
+                                <option value="paid">Pagado</option>
+                                <option value="cancelled">Cancelado</option>
+                                <option value="completed">Completado</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">ID Pago MercadoPago</label>
+                            <input type="text" name="mp_payment_id" id="edit_appt_mp_id" class="form-control">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Notas</label>
+                            <textarea name="notes" id="edit_appt_notes" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <?php require_once dirname(__DIR__, 2) . '/views/layouts/admin_footer.php'; ?>

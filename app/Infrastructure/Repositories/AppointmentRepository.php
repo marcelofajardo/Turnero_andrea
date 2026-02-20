@@ -156,7 +156,11 @@ final class AppointmentRepository implements AppointmentRepositoryInterface
     public function update(Appointment $appointment): void
     {
         $sql = "UPDATE appointments SET
+                    customer_name            = :name,
+                    customer_phone           = :phone,
+                    customer_email           = :email,
                     status                   = :status,
+                    notes                    = :notes,
                     mercadopago_payment_id   = :mp_pid,
                     reminder_sent            = :reminder_sent,
                     updated_at               = NOW()
@@ -164,11 +168,21 @@ final class AppointmentRepository implements AppointmentRepositoryInterface
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
+            ':name'         => $appointment->getCustomerName(),
+            ':phone'        => $appointment->getCustomerPhone(),
+            ':email'        => $appointment->getCustomerEmail(),
             ':status'       => $appointment->getStatus(),
+            ':notes'        => $appointment->getNotes(),
             ':mp_pid'       => $appointment->getMercadopagoPaymentId(),
             ':reminder_sent'=> $appointment->isReminderSent() ? 1 : 0,
             ':id'           => $appointment->getId(),
         ]);
+    }
+
+    public function delete(int $id): void
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM appointments WHERE id = :id');
+        $stmt->execute([':id' => $id]);
     }
 
     // -------------------------------------------------------

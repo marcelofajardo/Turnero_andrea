@@ -11,6 +11,7 @@ use App\Infrastructure\Repositories\ServiceRepository;
 use App\Infrastructure\Repositories\SettingsRepository;
 use App\Shared\Helpers\CsrfHelper;
 use App\Domain\Entities\Service;
+use App\Domain\Entities\Appointment;
 use PDO;
 
 /**
@@ -89,6 +90,51 @@ final class AdminController extends BaseController
         $this->view('admin.appointments', compact(
             'appointments', 'page', 'totalPages', 'filters', 'services', 'csrf', 'total'
         ));
+    }
+
+    public function updateAppointment(): void
+    {
+        $this->boot();
+        (new \App\Http\Middleware\CsrfMiddleware())->handle();
+
+        $id = (int) ($_POST['id'] ?? 0);
+        $appointment = $this->apptRepo->findById($id);
+
+        if ($appointment === null) {
+            $this->redirect('/admin/appointments?error=notfound');
+        }
+
+        // Create a new instance with updated values
+        // We use the same serviceId, dates, etc. from the existing one as those aren't typically edited here
+        // But we update name, phone, email, notes, and status.
+        $updated = new \App\Domain\Entities\Appointment(
+            id:                  $id,
+            serviceId:           $appointment->getServiceId(),
+            customerName:        trim($_POST['customer_name']  ?? $appointment->getCustomerName()),
+            customerPhone:       trim($_POST['customer_phone'] ?? $appointment->getCustomerPhone()),
+            customerEmail:       trim($_POST['customer_email'] ?? $appointment->getCustomerEmail()),
+            appointmentDatetime: $appointment->getAppointmentDatetime(),
+            endDatetime:         $appointment->getEndDatetime(),
+            status:              $_POST['status'] ?? $appointment->getStatus(),
+            notes:               trim($_POST['notes'] ?? $appointment->getNotes()),
+            cancellationToken:   $appointment->getCancellationToken(),
+            reminderSent:        $appointment->isReminderSent(),
+            mercadopagoPaymentId: $_POST['mp_payment_id'] ?? $appointment->getMercadopagoPaymentId(),
+            createdAt:           $appointment->getCreatedAt()
+        );
+
+        $this->apptRepo->update($updated);
+        $this->redirect('/admin/appointments?msg=updated');
+    }
+
+    public function deleteAppointment(): void
+    {
+        $this->boot();
+        (new \App\Http\Middleware\CsrfMiddleware())->handle();
+
+        $id = (int) ($_POST['id'] ?? 0);
+        $this->apptRepo->delete($id);
+        $this->redirect('/admin/appointments?msg=deleted');
     }
 
     // -------------------------------------------------------
