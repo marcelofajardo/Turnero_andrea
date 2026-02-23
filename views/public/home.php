@@ -11,7 +11,7 @@
         <!-- Booking Card -->
         <div class="row justify-content-center">
             <div class="col-12 col-lg-9 col-xl-8">
-                <div class="booking-card">
+                <div class="booking-card px-2 px-sm-3">
 
                     <!-- Step 1: Service -->
                     <div class="booking-step" id="step-service">

@@ -437,18 +437,86 @@ a:hover {
 }
 
 /* ---- Responsive ---- */
-@media (max-width: 480px) {
+@media (max-width: 576px) {
+    .hero-section {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+
     .hero-title {
         font-size: 1.6rem;
     }
 
     .booking-card {
         padding: 1rem;
+        border-radius: 14px;
+    }
+
+    .step-header {
+        gap: .5rem;
     }
 
     .step-badge {
         width: 30px;
         height: 30px;
         font-size: .8rem;
+    }
+
+    /* Service cards stack and allow content to wrap nicely on small screens */
+    .service-card {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: .6rem;
+        padding: .7rem .85rem;
+    }
+
+    .service-card .flex-grow-1 {
+        min-width: 0;
+    }
+
+    .service-dot {
+        width: 12px;
+        height: 12px;
+        margin-top: 6px;
+    }
+
+    .badge-price,
+    .badge-duration {
+        font-size: .7rem;
+        padding: .15em .45em;
+    }
+
+    /* Calendar and date inputs should be full width */
+    .calendar-container,
+    .flatpickr-calendar.inline {
+        max-width: 100%;
+        padding: 0;
+        width: 100%;
+    }
+
+    .date-input {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    /* Make slot buttons stack for easy tapping */
+    .slots-grid {
+        gap: .5rem;
+    }
+
+    .slot-btn {
+        flex: 1 1 100%;
+        width: 100%;
+        text-align: center;
+        padding: .6rem .75rem;
+    }
+
+    .selection-summary {
+        font-size: .9rem;
+        padding: .75rem;
+    }
+
+    .btn-lg.w-100 {
+        padding: .7rem .75rem;
     }
 }
