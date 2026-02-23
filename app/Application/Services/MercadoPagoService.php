@@ -84,7 +84,7 @@ final class MercadoPagoService
                     'unit_price'  => $amount,
                     'currency_id' => 'ARS',
                 ]],
-                'back_urls' => [
+                'back_url' => [
                     'success' => "{$fullUrl}/pago/exito?appt={$appointmentId}",
                     'failure' => "{$fullUrl}/pago/fallo?appt={$appointmentId}",
                     'pending' => "{$fullUrl}/pago/pendiente?appt={$appointmentId}",
@@ -112,12 +112,23 @@ final class MercadoPagoService
                 'preference_id' => $preference->id,
             ];
         } catch (\Throwable $e) {
-            AppLogger::error("Failed to create MP preference", [
+            $errorData = [
                 'error' => $e->getMessage(),
                 'type' => get_class($e),
                 'trace' => substr($e->getTraceAsString(), 0, 500)
-            ]);
-            throw new PaymentException('No se pudo iniciar el proceso de pago: ' . $e->getMessage());
+            ];
+
+            if ($e instanceof \MercadoPago\Exceptions\MPApiException && $e->getApiResponse()) {
+                $errorData['api_response'] = $e->getApiResponse()->getContent();
+            }
+
+            AppLogger::error("Failed to create MP preference", $errorData);
+            
+            $msg = 'No se pudo iniciar el proceso de pago: ' . $e->getMessage();
+            if (isset($errorData['api_response']['message'])) {
+                $msg .= ' (' . $errorData['api_response']['message'] . ')';
+            }
+            throw new PaymentException($msg);
         }
     }
 
