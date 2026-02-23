@@ -44,6 +44,11 @@ final class MercadoPagoService
             return;
         }
 
+        AppLogger::debug('Initializing MercadoPago SDK', [
+            'token_preview' => substr($accessToken, 0, 10) . '...',
+            'custom' => $customAccessToken !== null
+        ]);
+
         MercadoPagoConfig::setAccessToken($accessToken);
         MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::SERVER);
     }
@@ -107,8 +112,12 @@ final class MercadoPagoService
                 'preference_id' => $preference->id,
             ];
         } catch (\Throwable $e) {
-            AppLogger::error("Failed to create MP preference", ['error' => $e->getMessage()]);
-            throw new PaymentException('No se pudo iniciar el proceso de pago. Intente nuevamente.');
+            AppLogger::error("Failed to create MP preference", [
+                'error' => $e->getMessage(),
+                'type' => get_class($e),
+                'trace' => substr($e->getTraceAsString(), 0, 500)
+            ]);
+            throw new PaymentException('No se pudo iniciar el proceso de pago: ' . $e->getMessage());
         }
     }
 
