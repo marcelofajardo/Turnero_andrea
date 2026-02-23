@@ -84,12 +84,11 @@ final class MercadoPagoService
                     'unit_price'  => $amount,
                     'currency_id' => 'ARS',
                 ]],
-                'back_url' => [
+                'back_urls' => [
                     'success' => "{$fullUrl}/pago/exito?appt={$appointmentId}",
                     'failure' => "{$fullUrl}/pago/fallo?appt={$appointmentId}",
                     'pending' => "{$fullUrl}/pago/pendiente?appt={$appointmentId}",
                 ],
-                'auto_return'         => 'approved',
                 'notification_url'    => "{$fullUrl}/webhook/mercadopago" . ($serviceId ? "?sid={$serviceId}" : ""),
                 'external_reference'  => (string) $appointmentId,
                 'expires'             => true,
