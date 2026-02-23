@@ -8,6 +8,7 @@ use App\Domain\Entities\Appointment;
 use App\Infrastructure\Repositories\AppointmentRepository;
 use App\Infrastructure\Repositories\SettingsRepository;
 use App\Infrastructure\Repositories\ServiceRepository;
+use App\Infrastructure\Gateways\MetaCloudApiGateway;
 use App\Shared\Logging\AppLogger;
 use DateTimeImmutable;
 use DateTimeZone;
@@ -47,7 +48,10 @@ final class ReminderService
         foreach ($appointments as $appointment) {
             try {
                 $service = $this->serviceRepo->findById($appointment->getServiceId());
-                $this->sendReminder($appointment, $service?->getName() ?? 'Turno');
+                if ($service === null) {
+                    throw new \Exception("Service not found for appointment #{$appointment->getId()}");
+                }
+                $this->sendReminder($appointment, $service);
 
                 $appointment->markReminderSent();
                 $this->appointmentRepo->update($appointment);
@@ -69,8 +73,11 @@ final class ReminderService
     // Private helpers
     // -------------------------------------------------------
 
-    private function sendReminder(Appointment $appointment, string $serviceName): void
+    private function sendReminder(Appointment $appointment, \App\Domain\Entities\Service $service): void
     {
+        $token = $service->getWhatsappApiToken();
+        $phoneId = $service->getWhatsappPhoneNumberId();
+
         $template = $this->settingsRepo->get(
             'whatsapp_template_reminder',
             'Recordatorio: Mañana {date} a las {time} tenés turno para {service}.'
@@ -81,7 +88,7 @@ final class ReminderService
 
         $message = strtr($template, [
             '{name}'       => $appointment->getCustomerName(),
-            '{service}'    => $serviceName,
+            '{service}'    => $service->getName(),
             '{date}'       => $appointment->getAppointmentDatetime()->format('d/m/Y'),
             '{time}'       => $appointment->getAppointmentDatetime()->format('H:i'),
             '{cancel_url}' => $cancelUrl,
@@ -97,8 +104,17 @@ final class ReminderService
             'wa_link'        => $waLink,
         ]);
 
-        // Future hook: inject WhatsApp API client and call it here
-        // $this->whatsappApiClient->send($phone, $message);
+        if (!empty($token) && !empty($phoneId)) {
+            try {
+                $gateway = new MetaCloudApiGateway($token, $phoneId);
+                $gateway->sendMessage($phone, $message);
+            } catch (\Throwable $e) {
+                AppLogger::error("Failed to send WhatsApp reminder", [
+                    'appointment_id' => $appointment->getId(),
+                    'error'          => $e->getMessage(),
+                ]);
+            }
+        }
     }
 
     private function logFailedJob(Appointment $appointment, string $error): void

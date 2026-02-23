@@ -53,9 +53,9 @@ final class ServiceRepository implements ServiceRepositoryInterface
     public function save(Service $service): Service
     {
         $sql = "INSERT INTO services
-                    (name, slug, description, price, duration_minutes, color, is_active, sort_order, mp_access_token, mp_public_key)
+                    (name, slug, description, price, duration_minutes, color, is_active, sort_order, mp_access_token, mp_public_key, whatsapp_api_token, whatsapp_phone_number_id)
                 VALUES
-                    (:name, :slug, :desc, :price, :dur, :color, :active, :sort, :mp_token, :mp_key)";
+                    (:name, :slug, :desc, :price, :dur, :color, :active, :sort, :mp_token, :mp_key, :wa_token, :wa_phone)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -69,6 +69,8 @@ final class ServiceRepository implements ServiceRepositoryInterface
             ':sort'     => $service->getSortOrder(),
             ':mp_token' => $service->getMpAccessToken(),
             ':mp_key'   => $service->getMpPublicKey(),
+            ':wa_token' => $service->getWhatsappApiToken(),
+            ':wa_phone' => $service->getWhatsappPhoneNumberId(),
         ]);
 
         return $this->findById((int) $this->pdo->lastInsertId());
@@ -87,6 +89,8 @@ final class ServiceRepository implements ServiceRepositoryInterface
                     sort_order       = :sort,
                     mp_access_token  = :mp_token,
                     mp_public_key    = :mp_key,
+                    whatsapp_api_token = :wa_token,
+                    whatsapp_phone_number_id = :wa_phone,
                     updated_at       = NOW()
                 WHERE id = :id";
 
@@ -102,6 +106,8 @@ final class ServiceRepository implements ServiceRepositoryInterface
             ':sort'     => $service->getSortOrder(),
             ':mp_token' => $service->getMpAccessToken(),
             ':mp_key'   => $service->getMpPublicKey(),
+            ':wa_token' => $service->getWhatsappApiToken(),
+            ':wa_phone' => $service->getWhatsappPhoneNumberId(),
             ':id'       => $service->getId(),
         ]);
     }
@@ -130,6 +136,8 @@ final class ServiceRepository implements ServiceRepositoryInterface
             sortOrder:       (int) $row['sort_order'],
             mpAccessToken:   $row['mp_access_token'] ?? null,
             mpPublicKey:     $row['mp_public_key'] ?? null,
+            whatsappApiToken: $row['whatsapp_api_token'] ?? null,
+            whatsappPhoneNumberId: $row['whatsapp_phone_number_id'] ?? null,
         );
     }
 }

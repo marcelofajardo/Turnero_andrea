@@ -89,7 +89,7 @@ final class AppointmentRepository implements AppointmentRepositoryInterface
         return array_map([$this, 'hydrate'], $stmt->fetchAll());
     }
 
-    /** @return Appointment[] */
+    /** @return array<int, array<string, mixed>> */
     public function findPaginated(int $page, int $perPage, array $filters = []): array
     {
         $offset = ($page - 1) * $perPage;

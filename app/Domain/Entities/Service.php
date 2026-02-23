@@ -21,6 +21,8 @@ final class Service
         private int $sortOrder,
         private ?string $mpAccessToken = null,
         private ?string $mpPublicKey = null,
+        private ?string $whatsappApiToken = null,
+        private ?string $whatsappPhoneNumberId = null,
     ) {}
 
     public function getId(): ?int
@@ -81,6 +83,16 @@ final class Service
     public function getMpPublicKey(): ?string
     {
         return $this->mpPublicKey;
+    }
+
+    public function getWhatsappApiToken(): ?string
+    {
+        return $this->whatsappApiToken;
+    }
+
+    public function getWhatsappPhoneNumberId(): ?string
+    {
+        return $this->whatsappPhoneNumberId;
     }
 
     public function activate(): void

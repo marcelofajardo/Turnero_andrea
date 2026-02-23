@@ -25,6 +25,8 @@
             document.getElementById('edit_active').checked = btn.dataset.active === '1';
             document.getElementById('edit_mp_token').value = btn.dataset.mpToken || '';
             document.getElementById('edit_mp_key').value = btn.dataset.mpKey || '';
+            document.getElementById('edit_wa_token').value = btn.dataset.waToken || '';
+            document.getElementById('edit_wa_phone').value = btn.dataset.waPhone || '';
 
             const modal = new bootstrap.Modal(document.getElementById('editServiceModal'));
             modal.show();

@@ -57,9 +57,10 @@ endif; ?>
                             data-price="<?= $svc->getPrice()?>" data-dur="<?= $svc->getDurationMinutes()?>"
                             data-color="<?= htmlspecialchars($svc->getColor())?>"
                             data-desc="<?= htmlspecialchars($svc->getDescription() ?? '')?>"
-                            data-active="<?= $svc->isActive() ? '1' : '0'?>" data-sort="<?= $svc->getSortOrder()?>"
                             data-mp-token="<?= htmlspecialchars($svc->getMpAccessToken() ?? '')?>"
-                            data-mp-key="<?= htmlspecialchars($svc->getMpPublicKey() ?? '')?>">
+                            data-mp-key="<?= htmlspecialchars($svc->getMpPublicKey() ?? '')?>"
+                            data-wa-token="<?= htmlspecialchars($svc->getWhatsappApiToken() ?? '')?>"
+                            data-wa-phone="<?= htmlspecialchars($svc->getWhatsappPhoneNumberId() ?? '')?>">
                             <i class="bi bi-pencil"></i>
                         </button>
                         <form method="POST" action="<?= $base_path?>/admin/services/delete" style="display:inline"
@@ -144,6 +145,19 @@ endif; ?>
                             <label class="form-label text-primary">Public Key</label>
                             <input type="text" name="mp_public_key" class="form-control" placeholder="APP_USR-...">
                         </div>
+
+                        <div class="col-12 mt-3 text-muted small mb-2"><i class="bi bi-whatsapp me-1"></i>Configuración
+                            WhatsApp (Opcional)</div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label text-success">WhatsApp Cloud API Token</label>
+                            <input type="password" name="whatsapp_api_token" class="form-control"
+                                placeholder="EAA...">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-success">WhatsApp Phone Number ID</label>
+                            <input type="text" name="whatsapp_phone_number_id" class="form-control" placeholder="1234567890">
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -213,6 +227,18 @@ endif; ?>
                         <div class="col-md-6">
                             <label class="form-label text-primary">Public Key</label>
                             <input type="text" name="mp_public_key" id="edit_mp_key" class="form-control">
+                        </div>
+
+                        <div class="col-12 mt-3 text-muted small mb-2"><i class="bi bi-whatsapp me-1"></i>Configuración
+                            WhatsApp (Opcional)</div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label text-success">WhatsApp Cloud API Token</label>
+                            <input type="password" name="whatsapp_api_token" id="edit_wa_token" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-success">WhatsApp Phone Number ID</label>
+                            <input type="text" name="whatsapp_phone_number_id" id="edit_wa_phone" class="form-control">
                         </div>
                     </div>
                 </div>

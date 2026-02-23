@@ -168,6 +168,8 @@ final class AdminController extends BaseController
             sortOrder:       (int) ($_POST['sort_order'] ?? 0),
             mpAccessToken:   trim($_POST['mp_access_token'] ?? '') ?: null,
             mpPublicKey:     trim($_POST['mp_public_key']   ?? '') ?: null,
+            whatsappApiToken: trim($_POST['whatsapp_api_token'] ?? '') ?: null,
+            whatsappPhoneNumberId: trim($_POST['whatsapp_phone_number_id'] ?? '') ?: null,
         );
 
         $this->serviceRepo->save($service);
@@ -198,6 +200,8 @@ final class AdminController extends BaseController
             sortOrder:       (int) ($_POST['sort_order'] ?? 0),
             mpAccessToken:   trim($_POST['mp_access_token'] ?? '') ?: null,
             mpPublicKey:     trim($_POST['mp_public_key']   ?? '') ?: null,
+            whatsappApiToken: trim($_POST['whatsapp_api_token'] ?? '') ?: null,
+            whatsappPhoneNumberId: trim($_POST['whatsapp_phone_number_id'] ?? '') ?: null,
         );
 
         $this->serviceRepo->update($updated);

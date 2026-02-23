@@ -36,7 +36,7 @@ final class WebhookController extends BaseController
                 $serviceRepo,
                 $settingsRepo,
                 new AppointmentAvailabilityService($apptRepo, $settingsRepo),
-                );
+            );
 
             $mpService = new MercadoPagoService($apptRepo, $apptService);
             $mpService->processWebhook($payload);

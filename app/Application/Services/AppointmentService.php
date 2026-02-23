@@ -12,6 +12,7 @@ use App\Infrastructure\Persistence\DatabaseConnection;
 use App\Infrastructure\Repositories\AppointmentRepository;
 use App\Infrastructure\Repositories\ServiceRepository;
 use App\Infrastructure\Repositories\SettingsRepository;
+use App\Infrastructure\Gateways\MetaCloudApiGateway;
 use App\Shared\Logging\AppLogger;
 use DateTimeImmutable;
 use DateTimeZone;
@@ -34,8 +35,8 @@ final class AppointmentService
 
     public function __construct(
         private readonly AppointmentRepository         $appointmentRepo,
-        private readonly ServiceRepository              $serviceRepo,
-        private readonly SettingsRepository             $settingsRepo,
+        private readonly ServiceRepository             $serviceRepo,
+        private readonly SettingsRepository            $settingsRepo,
         private readonly AppointmentAvailabilityService $availabilityService,
     ) {
         $this->pdo = DatabaseConnection::getInstance();
@@ -122,6 +123,9 @@ final class AppointmentService
                 'datetime'       => $appointmentDt->format('Y-m-d H:i'),
             ]);
 
+            // Enviar WhatsApp de confirmación si el servicio tiene credenciales configuradas
+            $this->sendConfirmationWhatsApp($saved, $service);
+
             return $saved;
         } catch (SlotNotAvailableException $e) {
             if ($this->pdo->inTransaction()) $this->pdo->rollBack();
@@ -187,6 +191,48 @@ final class AppointmentService
                 'error'          => $e->getMessage(),
             ]);
             throw $e;
+        }
+    }
+
+    // -------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------
+
+    private function sendConfirmationWhatsApp(Appointment $appointment, \App\Domain\Entities\Service $service): void
+    {
+        $token = $service->getWhatsappApiToken();
+        $phoneId = $service->getWhatsappPhoneNumberId();
+
+        if (empty($token) || empty($phoneId)) {
+            return;
+        }
+
+        $template = $this->settingsRepo->get(
+            'whatsapp_template_confirmation',
+            'Hola {name}! Tu turno para {service} el {date} a las {time} está confirmado. Cancelar: {cancel_url}'
+        );
+
+        $appUrl      = rtrim($_ENV['APP_URL'] ?? '', '/');
+        $cancelUrl   = $appUrl . '/cancelar/' . $appointment->getCancellationToken();
+
+        $message = strtr($template, [
+            '{name}'       => $appointment->getCustomerName(),
+            '{service}'    => $service->getName(),
+            '{date}'       => $appointment->getAppointmentDatetime()->format('d/m/Y'),
+            '{time}'       => $appointment->getAppointmentDatetime()->format('H:i'),
+            '{cancel_url}' => $cancelUrl,
+        ]);
+
+        $phone = preg_replace('/[^\d]/', '', $appointment->getCustomerPhone());
+        
+        try {
+            $gateway = new MetaCloudApiGateway($token, $phoneId);
+            $gateway->sendMessage($phone, $message);
+        } catch (\Throwable $e) {
+            AppLogger::error("Failed to send confirmation WhatsApp", [
+                'appointment_id' => $appointment->getId(),
+                'error'          => $e->getMessage(),
+            ]);
         }
     }
 

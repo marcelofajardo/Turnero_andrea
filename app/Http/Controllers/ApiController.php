@@ -67,11 +67,12 @@ final class ApiController extends BaseController
         try {
             $dto = CreateAppointmentDTO::fromArray($body);
 
+            $settingsRepo = new SettingsRepository();
             $apptService = new AppointmentService(
                 new AppointmentRepository(),
                 new ServiceRepository(),
-                new SettingsRepository(),
-                new AppointmentAvailabilityService(new AppointmentRepository(), new SettingsRepository()),
+                $settingsRepo,
+                new AppointmentAvailabilityService(new AppointmentRepository(), $settingsRepo),
             );
 
             $appointment = $apptService->create($dto);

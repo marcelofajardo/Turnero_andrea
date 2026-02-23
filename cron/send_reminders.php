@@ -15,6 +15,7 @@ use Dotenv\Dotenv;
 use App\Application\Services\ReminderService;
 use App\Infrastructure\Repositories\AppointmentRepository;
 use App\Infrastructure\Repositories\SettingsRepository;
+use App\Infrastructure\Repositories\ServiceRepository;
 use App\Shared\Logging\AppLogger;
 
 $dotenv = Dotenv::createMutable(dirname(__DIR__));
@@ -24,12 +25,14 @@ date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'America/Argentina/Buenos_Air
 AppLogger::info('Cron: send_reminders started');
 
 try {
+    $settingsRepo = new SettingsRepository();
     $reminderService = new ReminderService(
         new AppointmentRepository(),
-        new SettingsRepository(),
-        );
+        new ServiceRepository(),
+        $settingsRepo,
+    );
 
-    $count = $reminderService->sendDueReminders();
+    $count = $reminderService->sendPendingReminders();
     AppLogger::info("Cron: send_reminders finished", ['sent' => $count]);
     echo date('[Y-m-d H:i:s]') . " Reminders sent: {$count}\n";
 }
