@@ -57,6 +57,8 @@ endif; ?>
                             data-price="<?= $svc->getPrice()?>" data-dur="<?= $svc->getDurationMinutes()?>"
                             data-color="<?= htmlspecialchars($svc->getColor())?>"
                             data-desc="<?= htmlspecialchars($svc->getDescription() ?? '')?>"
+                            data-active="<?= $svc->isActive() ? '1' : '0'?>"
+                            data-sort="<?= $svc->getSortOrder()?>"
                             data-mp-token="<?= htmlspecialchars($svc->getMpAccessToken() ?? '')?>"
                             data-mp-key="<?= htmlspecialchars($svc->getMpPublicKey() ?? '')?>"
                             data-wa-token="<?= htmlspecialchars($svc->getWhatsappApiToken() ?? '')?>"
