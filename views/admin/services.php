@@ -61,6 +61,7 @@ endif; ?>
                             data-sort="<?= $svc->getSortOrder()?>"
                             data-mp-token="<?= htmlspecialchars($svc->getMpAccessToken() ?? '')?>"
                             data-mp-key="<?= htmlspecialchars($svc->getMpPublicKey() ?? '')?>"
+                            data-mp-sandbox="<?= $svc->isMpSandbox() ? '1' : '0'?>"
                             data-wa-token="<?= htmlspecialchars($svc->getWhatsappApiToken() ?? '')?>"
                             data-wa-phone="<?= htmlspecialchars($svc->getWhatsappPhoneNumberId() ?? '')?>">
                             <i class="bi bi-pencil"></i>
@@ -142,6 +143,12 @@ endif; ?>
                             <label class="form-label text-primary">Access Token</label>
                             <input type="password" name="mp_access_token" class="form-control"
                                 placeholder="APP_USR-...">
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center">
+                            <div class="form-check">
+                                <input type="checkbox" name="mp_sandbox" id="mp_sandbox" class="form-check-input">
+                                <label for="mp_sandbox" class="form-check-label">Usar Sandbox</label>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label text-primary">Public Key</label>
@@ -225,6 +232,12 @@ endif; ?>
                         <div class="col-md-6">
                             <label class="form-label text-primary">Access Token</label>
                             <input type="password" name="mp_access_token" id="edit_mp_token" class="form-control">
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center">
+                            <div class="form-check">
+                                <input type="checkbox" name="mp_sandbox" id="edit_mp_sandbox" class="form-check-input" data-mp-sandbox>
+                                <label for="edit_mp_sandbox" class="form-check-label">Usar Sandbox</label>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label text-primary">Public Key</label>

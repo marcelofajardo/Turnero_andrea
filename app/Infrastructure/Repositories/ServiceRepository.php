@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repositories;
 
 use App\Domain\Entities\Service;
+use App\Shared\Security\Encryptor;
 use App\Domain\Interfaces\ServiceRepositoryInterface;
 use App\Infrastructure\Persistence\DatabaseConnection;
 use PDO;
@@ -53,9 +54,9 @@ final class ServiceRepository implements ServiceRepositoryInterface
     public function save(Service $service): Service
     {
         $sql = "INSERT INTO services
-                    (name, slug, description, price, duration_minutes, color, is_active, sort_order, mp_access_token, mp_public_key, whatsapp_api_token, whatsapp_phone_number_id)
+                    (name, slug, description, price, duration_minutes, color, is_active, sort_order, mp_sandbox, mp_access_token, mp_public_key, whatsapp_api_token, whatsapp_phone_number_id)
                 VALUES
-                    (:name, :slug, :desc, :price, :dur, :color, :active, :sort, :mp_token, :mp_key, :wa_token, :wa_phone)";
+                    (:name, :slug, :desc, :price, :dur, :color, :active, :sort, :mp_sandbox, :mp_token, :mp_key, :wa_token, :wa_phone)";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -67,10 +68,11 @@ final class ServiceRepository implements ServiceRepositoryInterface
             ':color'    => $service->getColor(),
             ':active'   => $service->isActive() ? 1 : 0,
             ':sort'     => $service->getSortOrder(),
-            ':mp_token' => $service->getMpAccessToken(),
+            ':mp_token' => Encryptor::encrypt($service->getMpAccessToken()),
             ':mp_key'   => $service->getMpPublicKey(),
-            ':wa_token' => $service->getWhatsappApiToken(),
+            ':wa_token' => Encryptor::encrypt($service->getWhatsappApiToken()),
             ':wa_phone' => $service->getWhatsappPhoneNumberId(),
+            ':mp_sandbox' => $service->isMpSandbox() ? 1 : 0,
         ]);
 
         return $this->findById((int) $this->pdo->lastInsertId());
@@ -87,6 +89,7 @@ final class ServiceRepository implements ServiceRepositoryInterface
                     color            = :color,
                     is_active        = :active,
                     sort_order       = :sort,
+                    mp_sandbox       = :mp_sandbox,
                     mp_access_token  = :mp_token,
                     mp_public_key    = :mp_key,
                     whatsapp_api_token = :wa_token,
@@ -104,10 +107,11 @@ final class ServiceRepository implements ServiceRepositoryInterface
             ':color'    => $service->getColor(),
             ':active'   => $service->isActive() ? 1 : 0,
             ':sort'     => $service->getSortOrder(),
-            ':mp_token' => $service->getMpAccessToken(),
+            ':mp_token' => Encryptor::encrypt($service->getMpAccessToken()),
             ':mp_key'   => $service->getMpPublicKey(),
-            ':wa_token' => $service->getWhatsappApiToken(),
+            ':wa_token' => Encryptor::encrypt($service->getWhatsappApiToken()),
             ':wa_phone' => $service->getWhatsappPhoneNumberId(),
+            ':mp_sandbox' => $service->isMpSandbox() ? 1 : 0,
             ':id'       => $service->getId(),
         ]);
     }
@@ -134,9 +138,10 @@ final class ServiceRepository implements ServiceRepositoryInterface
             color:           $row['color'],
             isActive:        (bool) $row['is_active'],
             sortOrder:       (int) $row['sort_order'],
-            mpAccessToken:   $row['mp_access_token'] ?? null,
+            mpSandbox:       (bool) ($row['mp_sandbox'] ?? 0),
+            mpAccessToken:   Encryptor::decrypt($row['mp_access_token'] ?? null),
             mpPublicKey:     $row['mp_public_key'] ?? null,
-            whatsappApiToken: $row['whatsapp_api_token'] ?? null,
+            whatsappApiToken: Encryptor::decrypt($row['whatsapp_api_token'] ?? null),
             whatsappPhoneNumberId: $row['whatsapp_phone_number_id'] ?? null,
         );
     }

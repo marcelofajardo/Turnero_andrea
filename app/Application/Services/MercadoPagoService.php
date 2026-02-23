@@ -35,9 +35,12 @@ final class MercadoPagoService
         $this->initSdk();
     }
 
-    private function initSdk(?string $customAccessToken = null): void
+    private function initSdk(?string $customAccessToken = null, ?bool $useSandbox = null): void
     {
         $accessToken = $customAccessToken ?: ($_ENV['MP_ACCESS_TOKEN'] ?? '');
+        // Determine runtime env: service-specific sandbox overrides global MP_SANDBOX
+        $globalSandbox = (($_ENV['MP_SANDBOX'] ?? 'false') === 'true');
+        $sandbox = $useSandbox ?? $globalSandbox;
 
         if (empty($accessToken)) {
             AppLogger::warning('MercadoPago access token not configured.');
@@ -50,6 +53,9 @@ final class MercadoPagoService
         ]);
 
         MercadoPagoConfig::setAccessToken($accessToken);
+        // The SDK exposes LOCAL and SERVER env types; use SERVER for API calls.
+        // Sandbox behavior is controlled by using sandbox credentials and by
+        // selecting `sandbox_init_point` when presenting the preference.
         MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::SERVER);
     }
 
@@ -67,7 +73,7 @@ final class MercadoPagoService
                 $serviceRepo = new \App\Infrastructure\Repositories\ServiceRepository();
                 $service = $serviceRepo->findById($serviceId);
                 if ($service && $service->getMpAccessToken()) {
-                    $this->initSdk($service->getMpAccessToken());
+                    $this->initSdk($service->getMpAccessToken(), $service->isMpSandbox());
                 }
             }
 
@@ -97,9 +103,20 @@ final class MercadoPagoService
 
             $preference = $client->create($body);
 
-            $initPoint = ($_ENV['MP_SANDBOX'] === 'true')
-                ? $preference->sandbox_init_point
-                : $preference->init_point;
+            // Choose the appropriate init point: service-specific sandbox overrides global
+            $useSandboxForPreference = false;
+            if ($serviceId) {
+                $serviceRepo = new \App\Infrastructure\Repositories\ServiceRepository();
+                $svc = $serviceRepo->findById($serviceId);
+                if ($svc !== null) {
+                    $useSandboxForPreference = $svc->isMpSandbox();
+                }
+            }
+            if (!$useSandboxForPreference) {
+                $useSandboxForPreference = (($_ENV['MP_SANDBOX'] ?? 'false') === 'true');
+            }
+
+            $initPoint = $useSandboxForPreference ? $preference->sandbox_init_point : $preference->init_point;
 
             AppLogger::info("MP Preference created", [
                 'preference_id'  => $preference->id,
@@ -146,7 +163,7 @@ final class MercadoPagoService
             $serviceRepo = new \App\Infrastructure\Repositories\ServiceRepository();
             $service = $serviceRepo->findById($serviceId);
             if ($service && $service->getMpAccessToken()) {
-                $this->initSdk($service->getMpAccessToken());
+                $this->initSdk($service->getMpAccessToken(), $service->isMpSandbox());
             }
         }
 

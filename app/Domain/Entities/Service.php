@@ -19,6 +19,7 @@ final class Service
         private string $color,
         private bool $isActive,
         private int $sortOrder,
+        private bool $mpSandbox = false,
         private ?string $mpAccessToken = null,
         private ?string $mpPublicKey = null,
         private ?string $whatsappApiToken = null,
@@ -83,6 +84,11 @@ final class Service
     public function getMpPublicKey(): ?string
     {
         return $this->mpPublicKey;
+    }
+
+    public function isMpSandbox(): bool
+    {
+        return $this->mpSandbox;
     }
 
     public function getWhatsappApiToken(): ?string
